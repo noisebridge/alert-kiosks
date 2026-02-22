@@ -5,6 +5,7 @@ Sets up a Pi5 as a Noisebridge charge alerts kiosk display driver.
 ## Prerequisites
 
 - Ansible installed on your local machine
+- Pi 5+ running Raspberry Pi OS Lite (64 bit)
 - SSH access to the target Pi as user `noisebridge`
 - The following public key must be added to `/home/noisebridge/.ssh/authorized_keys` on the Pi:
 

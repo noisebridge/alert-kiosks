@@ -10,6 +10,7 @@
       - cage
       - firefox
       - wlr-randr
+      - wtype
     state: present
 
 - name: Ensure Firefox policies directory exists

@@ -1,6 +1,6 @@
 ---
 kiosk_user: noisebridge
-kiosk_url: "https://{{ vault_kiosk_http_user }}:{{ vault_kiosk_http_pass }}@donate.noisebridge.net/alerts"
+kiosk_url: "https://{{ vault_kiosk_http_user | trim }}:{{ vault_kiosk_http_pass | trim }}@donate.noisebridge.net/alerts"
 kiosk_display_output: HDMI-A-2
 kiosk_display_mode: 1920x1080
 kiosk_display_transform: "90"

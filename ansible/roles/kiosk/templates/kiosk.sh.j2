@@ -1,4 +1,10 @@
 #!/bin/bash
+export MOZ_ENABLE_WAYLAND=1
+export MOZ_WEBRENDER=1
+
+# Hide cursor
+export WLR_NO_HARDWARE_CURSORS=1
+export XCURSOR_SIZE=1
 
 # Wait for DRM device
 sleep 2
@@ -6,7 +12,11 @@ sleep 2
 # Rotate display to portrait and set sane resolution after cage starts
 (
   sleep 4
+  export WAYLAND_DISPLAY=wayland-0
+  export XDG_RUNTIME_DIR=/run/user/1000
   wlr-randr --output {{ kiosk_display_output }} --mode {{ kiosk_display_mode }} --transform {{ kiosk_display_transform }}
+  # Move cursor to bottom-right corner to hide it
+  wtype -M 10000 10000
 ) &
 
 exec cage -d -- firefox --kiosk "{{ kiosk_url }}"

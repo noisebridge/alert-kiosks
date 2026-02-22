@@ -18,12 +18,7 @@ ExecStart=/home/{{ kiosk_user }}/kiosk.sh
 Restart=on-failure
 RestartSec=5
 Environment=XDG_RUNTIME_DIR=/run/user/1000
-Environment=WAYLAND_DISPLAY=wayland-0
 Environment=WLR_LIBINPUT_NO_DEVICES=1
-Environment=MOZ_ENABLE_WAYLAND=1
-Environment=MOZ_WEBRENDER=1
-Environment=WLR_NO_HARDWARE_CURSORS=1
-Environment=XCURSOR_SIZE=1
 UtmpIdentifier=tty1
 UtmpMode=user
 
