@@ -1,11 +1,4 @@
 ---
-- name: Validate required credentials
-  ansible.builtin.assert:
-    that:
-      - kiosk_http_user is defined and kiosk_http_user | length > 0
-      - kiosk_http_pass is defined and kiosk_http_pass | length > 0
-    fail_msg: "kiosk_http_user and kiosk_http_pass must be set via -e"
-
 - name: Update apt cache and upgrade all packages
   ansible.builtin.apt:
     update_cache: true

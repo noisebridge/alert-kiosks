@@ -13,14 +13,14 @@ Provision a host:
 
 ```bash
 cd ansible
-ansible-playbook provision.yml --limit charge-alerts2 -e kiosk_http_user=$USER -e kiosk_http_pass=$PASS
+ansible-playbook provision.yml --ask-vault-pass --limit charge-alerts2
 ```
 
 Dry run (check mode):
 
 ```bash
 cd ansible
-ansible-playbook provision.yml --limit charge-alerts2 -e kiosk_http_user=$USER -e kiosk_http_pass=$PASS --check --diff
+ansible-playbook provision.yml --ask-vault-pass --limit charge-alerts2 --check --diff
 ```
 
 ## Adding a new host
@@ -29,7 +29,10 @@ Add an entry to `ansible/inventory.yml`:
 
 ```yaml
 all:
-  hosts:
-    charge-alerts4:
-      ansible_host: charge-alerts4.local
+  children:
+    kiosks:
+      hosts:
+        # ...
+        charge-alertsN:
+          ansible_host: charge-alertsN.local
 ```

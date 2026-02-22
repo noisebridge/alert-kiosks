@@ -1,9 +1,0 @@
----
-kiosk_user: noisebridge
-# kiosk_http_user and kiosk_http_pass must be provided via CLI:
-#   -e kiosk_http_user=... -e kiosk_http_pass=...
-kiosk_url: "https://{{ kiosk_http_user }}:{{ kiosk_http_pass }}@donate.noisebridge.net/alerts"
-kiosk_display_output: HDMI-A-2
-kiosk_display_mode: 1920x1080
-kiosk_display_transform: "90"
-kiosk_fbcon_rotate: "3"

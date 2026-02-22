@@ -1,5 +1,14 @@
 ---
 - name: Configure Pi 5 kiosk display
-  hosts: all
+  hosts: kiosks
+  pre_tasks:
+    - name: Write SSH private key
+      ansible.builtin.copy:
+        content: "{{ vault_ssh_private_key }}"
+        dest: ~/.ssh/charge-alerts
+        mode: "0600"
+      delegate_to: localhost
+      become: false
+      run_once: true
   roles:
     - kiosk
