@@ -3,6 +3,9 @@ kiosk_user: noisebridge
 kiosk_url: "https://{{ vault_kiosk_http_user | trim }}:{{ vault_kiosk_http_pass | trim }}@donate.noisebridge.net/alerts"
 kiosk_display_output: HDMI-A-2
 kiosk_display_mode: 1920x1080
+kiosk_arm_freq: 3000
+kiosk_gpu_freq: 1000
+kiosk_over_voltage_delta: 50000
 vault_kiosk_http_user: !vault |
           $ANSIBLE_VAULT;1.1;AES256
           38666565306166646638613964346430613232623765666433623134366566663061316236633232

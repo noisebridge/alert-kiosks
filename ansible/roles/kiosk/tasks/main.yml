@@ -62,6 +62,27 @@
     line: '\1 fbcon=rotate:{{ kiosk_fbcon_rotate }}'
     backrefs: true
 
+- name: Set CPU overclock frequency
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^#?arm_freq='
+    line: "arm_freq={{ kiosk_arm_freq }}"
+  notify: Reboot
+
+- name: Set GPU overclock frequency
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^#?gpu_freq='
+    line: "gpu_freq={{ kiosk_gpu_freq }}"
+  notify: Reboot
+
+- name: Set overclock voltage delta
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^#?over_voltage_delta='
+    line: "over_voltage_delta={{ kiosk_over_voltage_delta }}"
+  notify: Reboot
+
 - name: Enable and start kiosk service
   ansible.builtin.systemd:
     name: kiosk

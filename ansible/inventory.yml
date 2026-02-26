@@ -2,9 +2,8 @@ all:
   children:
     kiosks:
       hosts:
-        # Currently not a Pi5, so not quite compatible with this repo
-        # charge-alerts:
-        #   ansible_host: charge-alerts.local
+        charge-alerts1:
+          ansible_host: charge-alerts1.local
         charge-alerts2:
           ansible_host: charge-alerts2.local
         charge-alerts3:
