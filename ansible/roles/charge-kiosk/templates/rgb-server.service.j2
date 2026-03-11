@@ -1,0 +1,14 @@
+[Unit]
+Description=RGB LED Server
+After=network.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/local/bin/rgb-server
+Restart=always
+RestartSec=5
+Environment=NUM_LEDS={{ rgb_num_leds }}
+
+[Install]
+WantedBy=multi-user.target

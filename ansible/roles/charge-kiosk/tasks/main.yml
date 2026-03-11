@@ -7,8 +7,10 @@
 - name: Install kiosk packages
   ansible.builtin.apt:
     name:
-      - sway
+      - cage
       - firefox
+      - wlr-randr
+      - wtype
     state: present
 
 - name: Ensure Firefox policies directory exists
@@ -25,23 +27,6 @@
     dest: /etc/firefox/policies/policies.json
     owner: root
     group: root
-    mode: "0644"
-  notify: Restart kiosk
-
-- name: Ensure sway config directory exists
-  ansible.builtin.file:
-    path: /home/{{ kiosk_user }}/.config/sway
-    state: directory
-    owner: "{{ kiosk_user }}"
-    group: "{{ kiosk_user }}"
-    mode: "0755"
-
-- name: Deploy sway config
-  ansible.builtin.template:
-    src: sway-config.j2
-    dest: /home/{{ kiosk_user }}/.config/sway/config
-    owner: "{{ kiosk_user }}"
-    group: "{{ kiosk_user }}"
     mode: "0644"
   notify: Restart kiosk
 
@@ -101,6 +86,69 @@
 - name: Enable and start kiosk service
   ansible.builtin.systemd:
     name: kiosk
+    enabled: true
+    state: started
+    daemon_reload: true
+
+- name: Enable SPI
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^#?dtparam=spi='
+    line: "dtparam=spi=on"
+  notify: Reboot
+
+# --- RGB LED server ---
+
+- name: Install build-essential for compiling neopixel
+  ansible.builtin.apt:
+    name: build-essential
+    state: present
+
+- name: Copy neopixel.c to host
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../rgb-server/neopixel.c"
+    dest: /tmp/neopixel.c
+    mode: "0644"
+
+- name: Compile libneopixel.so
+  ansible.builtin.command:
+    cmd: gcc -shared -o /usr/local/lib/libneopixel.so -fPIC /tmp/neopixel.c
+  register: neopixel_compile
+  changed_when: neopixel_compile.rc == 0
+  notify:
+    - Run ldconfig
+    - Restart rgb-server
+
+- name: Build rgb-server binary
+  ansible.builtin.command:
+    cmd: bun run build
+    chdir: "{{ playbook_dir }}/../rgb-server"
+  delegate_to: localhost
+  become: false
+  register: rgb_build
+  changed_when: rgb_build.rc == 0
+
+- name: Copy rgb-server binary
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../rgb-server/dist/rgb-server"
+    dest: /usr/local/bin/rgb-server
+    owner: root
+    group: root
+    mode: "0755"
+  notify: Restart rgb-server
+
+- name: Deploy rgb-server systemd service
+  ansible.builtin.template:
+    src: rgb-server.service.j2
+    dest: /etc/systemd/system/rgb-server.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart rgb-server
+
+- name: Enable and start rgb-server
+  ansible.builtin.systemd:
+    name: rgb-server
     enabled: true
     state: started
     daemon_reload: true

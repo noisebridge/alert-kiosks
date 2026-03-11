@@ -1,3 +1,4 @@
 ---
-kiosk_display_transform: "90"
+kiosk_display_transform: "270"
 kiosk_fbcon_rotate: "1"
+rgb_num_leds: 100
