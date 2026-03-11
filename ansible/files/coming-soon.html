@@ -9,16 +9,25 @@
   html, body {
     margin: 0;
     height: 100%;
-    background: #e0e0e0;
+    background: #000;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: sans-serif;
+    font-family: monospace;
   }
   h1 {
-    color: #555;
     font-size: 10rem;
     font-weight: 300;
+    animation: rainbow 9s linear infinite;
+  }
+  @keyframes rainbow {
+    0%   { color: #ff0000; }
+    16%  { color: #ff8800; }
+    33%  { color: #ffff00; }
+    50%  { color: #00ff00; }
+    66%  { color: #0088ff; }
+    83%  { color: #8800ff; }
+    100% { color: #ff0000; }
   }
 </style>
 </head>
