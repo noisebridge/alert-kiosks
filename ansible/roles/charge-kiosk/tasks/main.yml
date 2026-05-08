@@ -106,6 +106,15 @@
     line: "dtparam=spi=on"
   notify: Reboot
 
+- name: Increase SPI buffer size to 8192 bytes
+  ansible.builtin.copy:
+    content: "options spidev bufsiz=8192\n"
+    dest: /etc/modprobe.d/spidev.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reboot
+
 # --- RGB LED server ---
 
 - name: Install build-essential for compiling neopixel
