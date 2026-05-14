@@ -4,6 +4,11 @@ const NUM_LEDS = parseInt(process.env["NUM_LEDS"] ?? "100");
 const BRIGHTNESS = 32;
 const PORT = 3000;
 const CORS_ORIGIN = "https://donate.noisebridge.net";
+const CORS_HEADERS = {
+	"Access-Control-Allow-Origin": CORS_ORIGIN,
+	"Access-Control-Allow-Methods": "POST, GET, OPTIONS",
+	"Access-Control-Allow-Headers": "Content-Type",
+};
 
 interface RGB {
 	r: number;
@@ -104,14 +109,6 @@ function startFunction(fn: LedFn, timeout?: number, data?: unknown) {
 	}
 }
 
-function corsHeaders() {
-	return {
-		"Access-Control-Allow-Origin": CORS_ORIGIN,
-		"Access-Control-Allow-Methods": "POST, GET, OPTIONS",
-		"Access-Control-Allow-Headers": "Content-Type",
-	};
-}
-
 // Startup: rainbow for 3 seconds then reset
 const rainbowFn: LedFn = (index, num_leds, timestamp) => {
 	const hue = (index / num_leds + timestamp / 1000) % 1;
@@ -129,7 +126,7 @@ Bun.serve({
 	routes: {
 		"/update": {
 			OPTIONS() {
-				return new Response(null, { status: 204, headers: corsHeaders() });
+				return new Response(null, { status: 204, headers: CORS_HEADERS });
 			},
 			async POST(req) {
 				try {
@@ -148,11 +145,11 @@ Bun.serve({
 					// Test it doesn't throw
 					fn(0, NUM_LEDS, Date.now(), body.data);
 					startFunction(fn, body.timeout, body.data);
-					return Response.json({ ok: true }, { headers: corsHeaders() });
+					return Response.json({ ok: true }, { headers: CORS_HEADERS });
 				} catch (e) {
 					return Response.json(
 						{ ok: false, error: e instanceof Error ? e.message : String(e) },
-						{ status: 400, headers: corsHeaders() },
+						{ status: 400, headers: CORS_HEADERS },
 					);
 				}
 			},
@@ -160,11 +157,11 @@ Bun.serve({
 
 		"/reset": {
 			OPTIONS() {
-				return new Response(null, { status: 204, headers: corsHeaders() });
+				return new Response(null, { status: 204, headers: CORS_HEADERS });
 			},
 			POST() {
 				resetLeds();
-				return Response.json({ ok: true }, { headers: corsHeaders() });
+				return Response.json({ ok: true }, { headers: CORS_HEADERS });
 			},
 		},
 
@@ -176,7 +173,7 @@ Bun.serve({
 						brightness: BRIGHTNESS,
 						active: currentFn !== null,
 					},
-					{ headers: corsHeaders() },
+					{ headers: CORS_HEADERS },
 				);
 			},
 		},
