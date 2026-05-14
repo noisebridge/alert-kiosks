@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+import json
+import os
+import socket
+import subprocess
+import time
+
+KIOSK_URL = "{{ kiosk_url }}"
+DISPLAY_OUTPUT = "{{ kiosk_display_output }}"
+DISPLAY_MODE = "{{ kiosk_display_mode }}"
+DISPLAY_TRANSFORM = "{{ kiosk_display_transform }}"
+
+os.environ["MOZ_ENABLE_WAYLAND"] = "1"
+os.environ["MOZ_WEBRENDER"] = "1"
+os.environ["WLR_NO_HARDWARE_CURSORS"] = "1"
+os.environ["XCURSOR_SIZE"] = "1"
+
+WAYLAND_ENV = {**os.environ, "WAYLAND_DISPLAY": "wayland-0", "XDG_RUNTIME_DIR": "/run/user/1000"}
+
+
+def _marionette_recv(sock):
+    buf = b""
+    while b":" not in buf:
+        chunk = sock.recv(1)
+        if not chunk:
+            raise ConnectionError
+        buf += chunk
+    length = int(buf.split(b":")[0])
+    body = buf.split(b":", 1)[1]
+    while len(body) < length:
+        body += sock.recv(length - len(body))
+    return json.loads(body)
+
+
+def _marionette_cmd(sock, msg_id, command, params=None):
+    msg = json.dumps([0, msg_id, command, params or {}])
+    sock.sendall(f"{len(msg)}:{msg}".encode())
+    return _marionette_recv(sock)
+
+
+def setup_display():
+    time.sleep(4)
+    subprocess.run(
+        ["wlr-randr", "--output", DISPLAY_OUTPUT, "--mode", DISPLAY_MODE, "--transform", DISPLAY_TRANSFORM],
+        env=WAYLAND_ENV,
+    )
+    subprocess.run(["wtype", "-M", "10000", "10000"], env=WAYLAND_ENV)
+
+
+def reload_watcher():
+    while True:
+        sock = None
+        try:
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.settimeout(15)
+            sock.connect(("127.0.0.1", 2828))
+            _marionette_recv(sock)
+            _marionette_cmd(sock, 1, "WebDriver:NewSession")
+            _marionette_cmd(sock, 2, "WebDriver:SetTimeouts", {"pageLoad": 15000})
+            msg_id = 2
+
+            while True:
+                time.sleep(30)
+                msg_id += 1
+                resp = _marionette_cmd(sock, msg_id, "WebDriver:ExecuteScript", {"script": "return document.documentURI"})
+                uri = resp[3]["value"] if resp[3] else ""
+                if uri.startswith("about:"):
+                    msg_id += 1
+                    try:
+                        _marionette_cmd(sock, msg_id, "WebDriver:Navigate", {"url": KIOSK_URL})
+                    except Exception:
+                        pass
+        except Exception:
+            time.sleep(5)
+        finally:
+            if sock:
+                sock.close()
+
+
+time.sleep(2)
+
+if os.fork() == 0:
+    setup_display()
+    os._exit(0)
+
+if os.fork() == 0:
+    reload_watcher()
+    os._exit(0)
+
+os.execvp("cage", ["cage", "-d", "--", "firefox", "--marionette", "--kiosk", KIOSK_URL])

@@ -10,6 +10,7 @@
       - cage
       - curl
       - firefox
+      - python3
       - wlr-randr
       - wtype
     state: present
@@ -33,8 +34,8 @@
 
 - name: Deploy kiosk script
   ansible.builtin.template:
-    src: kiosk.sh.j2
-    dest: /home/{{ kiosk_user }}/kiosk.sh
+    src: kiosk.py.j2
+    dest: /home/{{ kiosk_user }}/kiosk.py
     owner: "{{ kiosk_user }}"
     group: "{{ kiosk_user }}"
     mode: "0755"

@@ -14,7 +14,7 @@ TTYPath=/dev/tty1
 StandardInput=tty
 StandardOutput=journal
 StandardError=journal
-ExecStart=/home/{{ kiosk_user }}/kiosk.sh
+ExecStart=/home/{{ kiosk_user }}/kiosk.py
 Restart=on-failure
 RestartSec=5
 Environment=XDG_RUNTIME_DIR=/run/user/1000
