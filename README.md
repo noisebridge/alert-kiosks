@@ -28,11 +28,11 @@ cd ansible
 ansible-playbook charge-provision.yml --ask-vault-pass --limit charge-alerts2
 ```
 
-Provision a membership-alerts host:
+Provision a meetup-alerts host:
 
 ```bash
 cd ansible
-ansible-playbook membership-provision.yml --ask-vault-pass
+ansible-playbook meetup-provision.yml --ask-vault-pass
 ```
 
 Dry run (check mode):

@@ -10,7 +10,8 @@ all:
           ansible_ssh_private_key_file: ~/.ssh/charge-alerts
         charge-alerts4:
           ansible_ssh_private_key_file: ~/.ssh/charge-alerts
-    membership_kiosks:
+    meetup_kiosks:
       hosts:
-        membership-alerts:
-          ansible_ssh_private_key_file: ~/.ssh/membership-alerts
+        meetup-alerts:
+          ansible_host: meetup-alerts.local
+          ansible_ssh_private_key_file: ~/.ssh/meetup-alerts

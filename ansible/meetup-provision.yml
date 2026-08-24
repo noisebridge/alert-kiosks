@@ -1,0 +1,14 @@
+---
+- name: Configure meetup-alerts kiosk display
+  hosts: meetup_kiosks
+  pre_tasks:
+    - name: Write SSH private key
+      ansible.builtin.copy:
+        content: "{{ vault_meetup_ssh_private_key }}"
+        dest: ~/.ssh/meetup-alerts
+        mode: "0600"
+      delegate_to: localhost
+      become: false
+      run_once: true
+  roles:
+    - meetup-kiosk

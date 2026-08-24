@@ -157,11 +157,11 @@
     line: "gpu_freq={{ kiosk_gpu_freq }}"
   notify: Reboot
 
-- name: Set overclock voltage delta
+- name: Set overclock voltage
   ansible.builtin.lineinfile:
     path: /boot/firmware/config.txt
-    regexp: '^#?over_voltage_delta='
-    line: "over_voltage_delta={{ kiosk_over_voltage_delta }}"
+    regexp: '^#?over_voltage='
+    line: "over_voltage={{ kiosk_over_voltage }}"
   notify: Reboot
 
 - name: Enable and start kiosk service
